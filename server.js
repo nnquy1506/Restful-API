@@ -1,18 +1,19 @@
-let express = require('express');
-let app = express();
+const express = require('express')
+const app = express()
 const bodyParser = require('body-parser')
-let port = process.env.PORT || 3000;
+
+const port = process.env.PORT || 3000
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
-let routes = require('./api/routes') //importing route
+let routes = require('./routes') //importing route
 routes(app)
 
 app.use(function(req, res) {
     res.status(404).send({url: req.originalUrl + ' not found'})
 })
 
-app.listen(port);
+app.listen(port)
 
-console.log('RESTful API server started on: ' + port);
+console.log('RESTful API server started on: ' + port)
