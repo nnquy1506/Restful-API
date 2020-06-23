@@ -5,11 +5,11 @@ const mysql = require('mysql')
 const db = require('./../db')
 
 module.exports = {
-    getAll: (req, res) => {
+    getAllUsers: (req, res) => {
         let sql = 'CALL getAllUsers()';
         db.query(sql, (err, response) => {
             if (err) throw err
-            res.json(response)
+            res.json(response[0])
         })
     },
     getUserById: (req, res) => {
@@ -21,27 +21,60 @@ module.exports = {
             res.json(response[0]);
         })
     },
-    insertUser: (req, res) => {
+    insertUser: async (req, res) => {
         let data = req.body;
-        let sql = 'CALL addUser(?,?,?,?,?,?)';
-        db.query(sql, Object.values(data), (err, response) => {
-            if (err) throw err;
-            res.json({ message: 'add thanh cong' })
-        })
+        const isExits = await checkExitsEmail(data.email);
+        console.log(isExits)
+        if(!isExits) {
+            let sql = 'CALL addUser(?,?,?,?,?,?,?,?)';
+            db.query(sql, Object.values(data), (err, response) => {
+                if (err) throw err;
+                res.json({ message: 'Thêm thành công thành viên' })
+            })
+        } else {
+            res.json({ message: 'Email đã tồn tại' })
+        }
+      
     },
+    
     updateUser: (req, res) => {
         let data = req.body;
-        let sql = 'CALL updateUser(?,?,?,?,?,?,?)';
+        let sql = 'CALL updateUser(?,?,?,?,?,?,?,?,?)';
         db.query(sql, [req.params.id,...Object.values(data)], (err, response) => {
             if (err) throw err;
-            res.json({ message: 'update thanh cong' })
+            res.json({message: 'Update thành công'})
         })
     },
     deleteUser: (req, res) => {
         let sql = "CALL deleteUser(?)";
         db.query(sql, [req.params.id], (err, respone) => {
             if( err ) throw err;
-            res.json({message : "Xoa thanh cong"})
+            res.json({message : "Xóa thành công"})
         })
-    }
+    },
+    searchUser: (req, res) => {
+        let data = req.body;
+        console.log(data)
+        let sql = 'CALL searchUser("nguyen")';
+        db.query(sql, [req.params.user_name], (err, response) => {
+            if (err) throw err;
+            res.json(response[0]);
+
+        })
+    },
+     
+   
 }
+
+
+
+function checkExitsEmail  (email) {
+    const query =`select * from users where email = '${email}'`;
+    return new Promise((resolve) => {
+        db.query(query , [email] ,  (error, results) => {
+            if (error) throw error;
+            resolve(!!results.length)
+        });
+    })
+}
+
