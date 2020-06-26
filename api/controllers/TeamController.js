@@ -59,7 +59,6 @@ module.exports = {
 
 function checkExitsNameTeam(name,id_course){
     const query =`select * from team where name_team = '${name}' and id_course = '${id_course}'`;
-    console.log(query)
     return new Promise((resolve) => {
         db.query(query , [name] ,  (error, results) => {
             if (error) throw error;
