@@ -21,18 +21,24 @@ module.exports = {
             res.json(response[0]);
         })
     },
-    insertCourse: (req, res) => {
+    insertCourse: async (req, res) => {
         let data = req.body;
+        let isExits = await checkExitsNameCourse(data.name_course);
+       if(!isExits){
         let sql = 'CALL addCourse(?,?,?,?)';
         db.query(sql, Object.values(data), (err, response) => {
             if (err) throw err;
             res.json({ message: 'Thêm mới thành công' })
         })
+       }else {
+           res.json({message : 'Khóa học đã tồn tại'})
+       }
     },
     updateCourse: (req, res) => {
         let data = req.body;
-        let sql = 'CALL updateCourse(?,?,?,?)';
-        db.query(sql, [req.params.id_course,...Object.values(data)], (err, response) => {
+        console.log(req.body)
+        let sql = 'CALL updateCourse(?,?,?,?,?)';
+        db.query(sql, Object.values(data), (err, response) => {
             if (err) throw err;
             res.json({message: 'Update thành công'})
         })
@@ -46,6 +52,17 @@ module.exports = {
     },
     
 }
+
+function checkExitsNameCourse (name) {
+    const query =`select * from course where name_course = '${name}'`;
+    return new Promise((resolve) => {
+        db.query(query , [name] ,  (error, results) => {
+            if (error) throw error;
+            resolve(!!results.length)
+        });
+    })
+}
+
 
 
 

@@ -37,12 +37,12 @@ module.exports = {
       
     },
     
-    updateUser: (req, res) => {
+    updateUser: async (req, res) => {
         let data = req.body;
         let sql = 'CALL updateUser(?,?,?,?,?,?,?,?,?)';
-        db.query(sql, [req.params.id,...Object.values(data)], (err, response) => {
+        db.query(sql, Object.values(data), (err, response) => {
             if (err) throw err;
-            res.json({message: 'Update thành công'})
+            res.json({message: 'Sửa thành công'})
         })
     },
     deleteUser: (req, res) => {
@@ -52,21 +52,8 @@ module.exports = {
             res.json({message : "Xóa thành công"})
         })
     },
-    searchUser: (req, res) => {
-        let data = req.body;
-        console.log(data)
-        let sql = 'CALL searchUser("nguyen")';
-        db.query(sql, [req.params.user_name], (err, response) => {
-            if (err) throw err;
-            res.json(response[0]);
-
-        })
-    },
-     
-   
+    
 }
-
-
 
 function checkExitsEmail  (email) {
     const query =`select * from users where email = '${email}'`;
