@@ -23,7 +23,7 @@ module.exports = {
     },
     insertUser: async (req, res) => {
         let data = req.body;
-        const isExits = await checkExitsEmail(data.email);
+        const isExits = await checkExitsEmailAdd(data.email);
         console.log(isExits)
         if(!isExits) {
             let sql = 'CALL addUser(?,?,?,?,?,?,?,?)';
@@ -37,13 +37,18 @@ module.exports = {
       
     },
     
-    updateUser: async (req, res) => {
+    updateUser: async  (req, res) => {
         let data = req.body;
         let sql = 'CALL updateUser(?,?,?,?,?,?,?,?,?)';
-        db.query(sql, Object.values(data), (err, response) => {
-            if (err) throw err;
-            res.json({message: 'Sửa thành công'})
-        })
+        let isExits = await checkExitsEmailUpdate(data.email,data.id)
+        if(!isExits){
+            db.query(sql, Object.values(data), (err, response) => {
+                if (err) throw err;
+                res.json({message: 'Sửa thành công'})
+            })
+        }else {
+            res.json({message: 'Email đã tồn tại'})
+        }
     },
     deleteUser: (req, res) => {
         let sql = "CALL deleteUser(?)";
@@ -55,11 +60,23 @@ module.exports = {
     
 }
 
-function checkExitsEmail  (email) {
+function checkExitsEmailAdd  (email) {
     const query =`select * from users where email = '${email}'`;
     return new Promise((resolve) => {
         db.query(query , [email] ,  (error, results) => {
             if (error) throw error;
+            console.log(!!results.length)
+            resolve(!!results.length)
+        });
+    })
+}
+
+function checkExitsEmailUpdate (email,id) {
+    const query =`select * from users where email = '${email}' and id != '${id}'`;
+    return new Promise((resolve) => {
+        db.query(query , [email] ,  (error, results) => {
+            if (error) throw error;
+            console.log(!!results.length)
             resolve(!!results.length)
         });
     })

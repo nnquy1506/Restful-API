@@ -32,7 +32,7 @@ module.exports = {
         })
         }else
         {
-            res.json({message : 'Khóa học đã tồn tại'})  }
+            res.json({message : 'Team đã tồn tại'})  }
     },
     updateTeam: async (req, res) => {
         let data = req.body;
@@ -46,12 +46,12 @@ module.exports = {
     }
         else
         {
-            res.json({message : 'Khóa học đã tồn tại'})  }
+            res.json({message : 'Team đã tồn tại'})  }
     },
     deleteTeam: (req, res) => {
         let sql = "CALL deleteTeam(?)";
         db.query(sql, [req.params.id_team], (err, respone) => {
-            if( err ) throw err;
+            if( err )  res.json({message : "Team đã tồn tại thành viên "});
             res.json({message : "Xóa thành công"})
         })
     },
