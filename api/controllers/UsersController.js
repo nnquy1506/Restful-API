@@ -57,6 +57,15 @@ module.exports = {
             res.json({message : "Xóa thành công"})
         })
     },
+    checkExitsEmail: (req, res) => {
+        let data = req.body 
+        let sql = "select email from users where email = ? and id != ?"
+        db.query(sql,[req.params.email], (err, respone)=> {
+            if(err) throw err;
+            console.log(respone)
+            res.json(respone[0])
+        })
+    }
     
 }
 

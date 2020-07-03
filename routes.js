@@ -7,6 +7,10 @@ module.exports = function (app) {
   app.route('/users')
     .get(usersCtrl.getAllUsers)
     .post(usersCtrl.insertUser)
+    
+  app.route('/checkEmail/:email')
+    .get(usersCtrl.checkExitsEmail)
+
 
   app.route('/users/:id')
     .get(usersCtrl.getUserById)
